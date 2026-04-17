@@ -5,16 +5,29 @@ const cors = require("cors");
 
 const app = express();
 
+// Configure CORS
 const corsOptions = {
-    origin: ["https://tt4-2930-be-1-eeh8.onrender.com", "http://localhost:4200"],
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+            "https://tt4-2930-be-1-eeh8.onrender.com",
+            "http://localhost:4200"
+        ];
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.includes("onrender.com")) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Enable pre-flight for all routes
-
 app.use(express.json());
 
 // Health check route
